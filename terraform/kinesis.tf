@@ -8,6 +8,11 @@ resource "aws_kinesis_stream" "test" {
   }
 }
 
+resource "aws_kinesis_stream_consumer" "test" {
+  name = "test"
+  stream_arn = aws_kinesis_stream.test.arn
+}
+
 resource "aws_kinesis_firehose_delivery_stream" "test" {
   name        = "test"
   destination = "extended_s3"
