@@ -24,6 +24,10 @@ resource "aws_kinesis_firehose_delivery_stream" "test" {
   }
 }
 
+resource "aws_kinesis_analytics_application" "sql" {
+  name = "sql"
+}
+
 resource "aws_kinesisanalyticsv2_application" "test" {
   name = "test"
   runtime_environment = "FLINK-1_13"
