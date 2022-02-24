@@ -26,6 +26,56 @@ resource "aws_kinesis_firehose_delivery_stream" "test" {
 
 resource "aws_kinesis_analytics_application" "sql" {
   name = "sql"
+
+  inputs {
+    name_prefix = "input"
+
+    kinesis_stream {
+      resource_arn = aws_kinesis_stream.test.arn
+      role_arn     = aws_iam_role.kinesis_analytics.arn
+    }
+
+    schema {
+      record_columns {
+        mapping  = "$.id"
+        name     = "id"
+        sql_type = "INT"
+      }
+
+      record_columns {
+        mapping  = "$.type"
+        name     = "type"
+        sql_type = "VARCHAR(8)"
+      }
+
+      record_format {
+        mapping_parameters {
+          json {
+            record_row_path = "$"
+          }
+        }
+      }
+    }
+
+    starting_position_configuration {
+      starting_position = "NOW"
+    }
+  }
+
+  outputs {
+    name = "output"
+
+    schema {
+      record_format_type = "CSV"
+    }
+
+    kinesis_firehose {
+      resource_arn = aws_kinesis_firehose_delivery_stream.test.arn
+      role_arn     = aws_iam_role.kinesis_analytics.arn
+    }
+  }
+
+  start_application = true
 }
 
 resource "aws_kinesisanalyticsv2_application" "test" {
