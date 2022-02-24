@@ -111,6 +111,19 @@ data "aws_iam_policy_document" "kinesis_analytics" {
       aws_kinesis_firehose_delivery_stream.test.arn
     ]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = [
+      "arn:aws:logs:*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "kinesis_analytics" {

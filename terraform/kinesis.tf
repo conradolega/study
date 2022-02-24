@@ -87,6 +87,11 @@ resource "aws_kinesis_analytics_application" "sql" {
     GROUP BY type, FLOOR("input_001".ROWTIME TO HOUR);
   EOT
 
+  cloudwatch_logging_options {
+    log_stream_arn = aws_cloudwatch_log_stream.kinesis_analytics.arn
+    role_arn       = aws_iam_role.kinesis_analytics.arn
+  }
+
   start_application = true
 }
 
