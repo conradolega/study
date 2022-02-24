@@ -75,6 +75,18 @@ resource "aws_kinesis_analytics_application" "sql" {
     }
   }
 
+  code = <<EOT
+    CREATE OR REPLACE STREAM "outputs" (
+      type VARCHAR(8),
+      hour TIMESTAMP,
+      count INT
+    );
+    CREATE OR REPLACE PUMP "STREAM_PUMP" AS INSERT INTO "outputs"
+    SELECT STREAM type, FLOOR("input_001".ROWTIME TO HOUR) AS hour, COUNT(*) AS count
+    FROM "input_001"
+    GROUP BY type, FLOOR("input_001".ROWTIME TO HOUR);
+  EOT
+
   start_application = true
 }
 
