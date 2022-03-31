@@ -134,3 +134,40 @@ resource "aws_iam_role_policy_attachment" "kinesis_analytics" {
   role       = aws_iam_role.kinesis_analytics.name
   policy_arn = aws_iam_policy.kinesis_analytics.arn
 }
+
+data "aws_iam_policy" "glue_service_role" {
+  arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
+}
+
+data "aws_iam_policy" "s3_full_access" {
+  arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+data "aws_iam_policy" "glue_full_access" {
+  arn = "arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess"
+}
+
+resource "aws_iam_role" "glue_crawler" {
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "glue.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "glue_crawler_service_role" {
+  role       = aws_iam_role.glue_crawler.name
+  policy_arn = data.aws_iam_policy.glue_service_role.arn
+}
+
+resource "aws_iam_role_policy_attachment" "glue_crawler_s3_full_access" {
+  role       = aws_iam_role.glue_crawler.name
+  policy_arn = data.aws_iam_policy.s3_full_access.arn
+}
